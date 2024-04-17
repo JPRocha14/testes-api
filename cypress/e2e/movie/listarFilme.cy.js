@@ -2,6 +2,8 @@ describe('Consulta de filme', function () {
     var firstMovieId;
     var firstMovieName;
 
+    // cenários que comprovam que não precisa estar logado para
+    // listar os filmes cadastrados
     it('Listar todos os filmes cadastrados', function () {
         cy.request({
             method: 'GET',
