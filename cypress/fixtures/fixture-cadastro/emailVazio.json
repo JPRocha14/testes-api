@@ -1,0 +1,9 @@
+{
+    "message": [
+        "email must be longer than or equal to 1 characters",
+        "email must be an email",
+        "email should not be empty"
+    ],
+    "error": "Bad Request",
+    "statusCode": 400
+}

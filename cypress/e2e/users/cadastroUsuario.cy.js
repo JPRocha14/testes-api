@@ -108,10 +108,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(409)
-        expect(response.body).to.deep.eq({
-          message: "Email already in use",
-          error: "Conflict",
-          statusCode: 409
+        cy.fixture('./fixture-cadastro/emailDuplicado.json').then(function (emailExistente) {
+          expect(response.body).to.deep.eq(emailExistente)
         })
       })
     })
@@ -128,14 +126,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "email must be longer than or equal to 1 characters",
-            "email must be an email",
-            "email should not be empty"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-cadastro/emailVazio.json').then(function (emailVazio) {
+          expect(response.body).to.deep.eq(emailVazio)
         })
       })
     })
@@ -152,12 +144,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "email must be an email"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-cadastro/emailIncompleto.json').then(function (emailIncompleto) {
+          expect(response.body).to.deep.eq(emailIncompleto)
         })
       })
     })
@@ -174,12 +162,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "password must be longer than or equal to 6 characters"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-cadastro/senhaCurta.json').then(function (senhaCurta) {
+          expect(response.body).to.deep.eq(senhaCurta)
         })
       })
     })
@@ -196,12 +180,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "password must be shorter than or equal to 12 characters"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-cadastro/senhaLonga.json').then(function (senhaLonga) {
+          expect(response.body).to.deep.eq(senhaLonga)
         })
       })
     })
@@ -218,13 +198,8 @@ describe('Cadastro de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "password must be longer than or equal to 6 characters",
-            "password should not be empty"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-cadastro/senhaVazia.json').then(function (senhaVazia) {
+          expect(response.body).to.deep.eq(senhaVazia)
         })
       })
     })

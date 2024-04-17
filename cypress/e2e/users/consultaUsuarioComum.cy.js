@@ -36,7 +36,7 @@ describe('Consulta de Usuário Não Admin', () => {
     })
 
     // cenários de listagens não válidas por um usuário comum
-    describe('Listagem não válida pelo usuário comum', function () {
+    describe('Listagem inválida pelo usuário comum', function () {
         it('Não deve permitir listar todos os usuários', function () {
             cy.request({
                 method: 'GET',
@@ -47,9 +47,8 @@ describe('Consulta de Usuário Não Admin', () => {
                 failOnStatusCode: false
             }).then(function (response) {
                 expect(response.status).to.eq(403)
-                expect(response.body).to.deep.eq({
-                    message: "Forbidden",
-                    statusCode: 403
+                cy.fixture('./fixture-consulta/listagemInvalida.json').then(function (listagemInvalida) {
+                    expect(response.body).to.deep.eq(listagemInvalida)
                 })
                 expect(response.body).to.be.an('object')
             })
@@ -65,9 +64,8 @@ describe('Consulta de Usuário Não Admin', () => {
                 failOnStatusCode: false
             }).then(function (response) {
                 expect(response.status).to.eq(403)
-                expect(response.body).to.deep.eq({
-                    message: "Forbidden",
-                    statusCode: 403
+                cy.fixture('./fixture-consulta/listagemInvalida.json').then(function (listagemInvalida) {
+                    expect(response.body).to.deep.eq(listagemInvalida)
                 })
                 expect(response.body).to.be.an('object')
             })
