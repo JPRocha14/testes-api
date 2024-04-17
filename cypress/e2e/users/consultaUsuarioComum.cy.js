@@ -6,6 +6,7 @@ describe('Consulta de Usuário Não Admin', () => {
     var randomEmail = faker.internet.email();
     var randomNumber = faker.number.bigInt({ min: 1000000n });
 
+    // hook para cadastrar usuário e logar com o usuário cadastrado
     before(function () {
         cy.log('Cadastrando usuário')
         cy.request({
@@ -34,53 +35,60 @@ describe('Consulta de Usuário Não Admin', () => {
         })
     })
 
-    it('Não deve listar todos os usuários', function() {
-        cy.request({
-            method: 'GET',
-            url: '/api/users',
-            headers: {
-                Authorization: 'Bearer ' + token
-            },
-            failOnStatusCode: false
-        }).then(function (response) {
-            expect(response.status).to.eq(403)
-            expect(response.body).to.deep.eq({
-                message: "Forbidden",
-                statusCode: 403
+    // cenários de listagens não válidas por um usuário comum
+    describe('Listagem não válida pelo usuário comum', function () {
+        it('Não deve permitir listar todos os usuários', function () {
+            cy.request({
+                method: 'GET',
+                url: '/api/users',
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                failOnStatusCode: false
+            }).then(function (response) {
+                expect(response.status).to.eq(403)
+                expect(response.body).to.deep.eq({
+                    message: "Forbidden",
+                    statusCode: 403
+                })
+                expect(response.body).to.be.an('object')
             })
-            expect(response.body).to.be.an('object')
+        })
+
+        it('Não deve permitir conseguir listar outros usuários pelo id', function () {
+            cy.request({
+                method: 'GET',
+                url: '/api/users/' + randomNumber,
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                failOnStatusCode: false
+            }).then(function (response) {
+                expect(response.status).to.eq(403)
+                expect(response.body).to.deep.eq({
+                    message: "Forbidden",
+                    statusCode: 403
+                })
+                expect(response.body).to.be.an('object')
+            })
         })
     })
 
-    it('Deve conseguir listar seu próprio usuário pelo id', function(){
-        cy.request({
-            method: 'GET',
-            url: '/api/users/' + id,
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200)
-            expect(response.body).to.deep.include({name: 'João Pedro'})
-            expect(response.body).to.be.an('object')
+    // cenário de listagem válida por um usuário comum
+    describe('Listagem válida pelo usuário comum', function () {
+        it('Deve permitir conseguir listar seu próprio usuário pelo id', function () {
+            cy.request({
+                method: 'GET',
+                url: '/api/users/' + id,
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            }).then(function (response) {
+                expect(response.status).to.eq(200)
+                expect(response.body).to.deep.include({ name: 'João Pedro' })
+                expect(response.body).to.be.an('object')
+            })
         })
     })
 
-    it('Não deve conseguir listar outros usuários pelo id', function(){
-        cy.request({
-            method: 'GET',
-            url: '/api/users/' + randomNumber,
-            headers: {
-                Authorization: 'Bearer ' + token
-            },
-            failOnStatusCode: false
-        }).then(function (response) {
-            expect(response.status).to.eq(403)
-            expect(response.body).to.deep.eq({
-                message: "Forbidden",
-                statusCode: 403
-            })
-            expect(response.body).to.be.an('object')
-        })
-    })
 })

@@ -1,5 +1,7 @@
-describe('Retorno inesperado ao consultar filmes', function(){
+describe('Retorno inesperado ao consultar filmes', function () {
 
+    // cenários que mostram o retorno inesperado ao tentar
+    // quebrar os testes
     it('Consulta por nome de um filme que não existe deve retornar Not Found', function () {
         cy.request({
             method: 'GET',
