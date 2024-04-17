@@ -5,6 +5,8 @@ describe('Consulta de Usuário', () => {
     var token;
     var randomEmail = faker.internet.email();
 
+    // hook para cadastrar usuário, logar com o usuário cadastrado 
+    // e torná-lo admin para poder excluí-lo depois
     before(function () {
         cy.log('Cadastrando usuário')
         cy.request({
@@ -41,18 +43,14 @@ describe('Consulta de Usuário', () => {
         })
     })
 
+    // hook para excluir usuário criado
     after(function () {
         cy.log('Deletando usuário')
-        cy.request({
-            method: 'DELETE',
-            url: '/api/users/' + id,
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        })
+        cy.deleteUsuario(id, token)
     })
 
-    it('Deve listar todos os usuários', () => {
+    //cenários de listagem válidas de usuários sendo admin
+    it('Deve permitir listar todos os usuários', () => {
         cy.request({
             method: 'GET',
             url: '/api/users',
@@ -65,7 +63,7 @@ describe('Consulta de Usuário', () => {
         })
     })
 
-    it('Deve listar o usuário pelo id', () => {
+    it('Deve permitir listar o usuário pelo id', () => {
         cy.request({
             method: 'GET',
             url: '/api/users/' + id,
@@ -75,7 +73,10 @@ describe('Consulta de Usuário', () => {
         }).then(function (response) {
             expect(response.status).to.eq(200)
             expect(response.body).to.be.an('object')
-            expect(response.body).to.deep.include({name: 'João Pedro'})
+            expect(response.body.name).to.eq('João Pedro')
+            expect(response.body).to.have.property('id')
+            expect(response.body).to.have.property('name')
+            expect(response.body).to.have.property('email')
         })
     })
 })

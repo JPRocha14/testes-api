@@ -83,8 +83,11 @@ describe('Consulta de Usuário Não Admin', () => {
                 }
             }).then(function (response) {
                 expect(response.status).to.eq(200)
-                expect(response.body).to.deep.include({ name: 'João Pedro' })
+                expect(response.body.name).to.eq('João Pedro')
                 expect(response.body).to.be.an('object')
+                expect(response.body).to.have.property('id')
+                expect(response.body).to.have.property('name')
+                expect(response.body).to.have.property('email')
             })
         })
     })

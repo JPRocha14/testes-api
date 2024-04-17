@@ -62,6 +62,10 @@ describe('Cadastro de Usuário', () => {
         },
       }).then(function (response) {
         expect(response.status).to.eq(201)
+        expect(response.body).to.have.property('id')
+        expect(response.body).to.have.property('name')
+        expect(response.body).to.have.property('email')
+        expect(response.body).to.be.an('object')
       })
     })
 
@@ -76,6 +80,10 @@ describe('Cadastro de Usuário', () => {
         },
       }).then(function (response) {
         expect(response.status).to.eq(201)
+        expect(response.body).to.have.property('id')
+        expect(response.body).to.have.property('name')
+        expect(response.body).to.have.property('email')
+        expect(response.body).to.be.an('object')
       })
     })
 
@@ -90,6 +98,10 @@ describe('Cadastro de Usuário', () => {
         },
       }).then(function (response) {
         expect(response.status).to.eq(201)
+        expect(response.body).to.have.property('id')
+        expect(response.body).to.have.property('name')
+        expect(response.body).to.have.property('email')
+        expect(response.body).to.be.an('object')
       })
     })
   })
