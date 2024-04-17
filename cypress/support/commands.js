@@ -33,7 +33,7 @@ Cypress.Commands.add('cadastroUsuario', function () {
         url: '/api/users',
         body: {
             name: 'João Pedro',
-            email: 'pedro132@gmail.com',
+            email: 'pedro123@gmail.com',
             password: 'senhacorreta'
         }
     }).then(function (response) {

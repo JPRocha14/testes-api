@@ -56,13 +56,8 @@ describe('Login de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "email should not be empty",
-            "email must be an email"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-login/emailVazio.json').then(function (emptyEmail) {
+          expect(response.body).to.deep.eq(emptyEmail)
         })
         expect(response.body).to.be.an('object')
       })
@@ -79,12 +74,8 @@ describe('Login de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "email must be an email"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-login/emailIncompleto.json').then(function (incompleteEmail) {
+          expect(response.body).to.deep.eq(incompleteEmail)
         })
         expect(response.body).to.be.an('object')
       })
@@ -101,10 +92,8 @@ describe('Login de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(401)
-        expect(response.body).to.deep.eq({
-          message: "Invalid username or password.",
-          error: "Unauthorized",
-          statusCode: 401
+        cy.fixture('./fixture-login/loginIncorreto.json').then(function (emailIncorreto) {
+          expect(response.body).to.deep.eq(emailIncorreto)
         })
         expect(response.body).to.be.an('object')
       })
@@ -121,12 +110,8 @@ describe('Login de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(400)
-        expect(response.body).to.deep.eq({
-          message: [
-            "password should not be empty"
-          ],
-          error: "Bad Request",
-          statusCode: 400
+        cy.fixture('./fixture-login/senhaVazia.json').then(function (senhaVazia) {
+          expect(response.body).to.deep.eq(senhaVazia)
         })
         expect(response.body).to.be.an('object')
       })
@@ -143,10 +128,8 @@ describe('Login de Usuário', () => {
         failOnStatusCode: false
       }).then(function (response) {
         expect(response.status).to.eq(401)
-        expect(response.body).to.deep.eq({
-          message: "Invalid username or password.",
-          error: "Unauthorized",
-          statusCode: 401
+        cy.fixture('./fixture-login/loginIncorreto.json').then(function (senhaIncorreta) {
+          expect(response.body).to.deep.eq(senhaIncorreta)
         })
         expect(response.body).to.be.an('object')
       })
