@@ -8,7 +8,7 @@ describe('Consulta de Usuário Não Admin', () => {
 
     // hook para cadastrar usuário e logar com o usuário cadastrado
     before(function () {
-        cy.log('Cadastrando usuário')
+        cy.log('Cadastrando usuário');
         cy.request({
             method: 'POST',
             url: '/api/users',
@@ -18,10 +18,10 @@ describe('Consulta de Usuário Não Admin', () => {
                 password: 'senhacorreta'
             }
         }).then(function (response) {
-            expect(response.status).to.eq(201)
-            id = response.body.id
-        })
-        cy.log('Logando usuário')
+            expect(response.status).to.eq(201);
+            id = response.body.id;
+        });
+        cy.log('Logando usuário');
         cy.request({
             method: 'POST',
             url: '/api/auth/login',
@@ -30,10 +30,22 @@ describe('Consulta de Usuário Não Admin', () => {
                 password: 'senhacorreta'
             }
         }).then(function (response) {
-            expect(response.status).to.eq(200)
-            token = response.body.accessToken
-        })
-    })
+            expect(response.status).to.eq(200);
+            token = response.body.accessToken;
+        });
+    });
+
+    after(function () {
+        cy.request({
+            method: 'PATCH',
+            url: '/api/users/inactivate',
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }).then(function (response) {
+            expect(response.status).to.eq(204);
+        });
+    });
 
     // cenários de listagens não válidas por um usuário comum
     describe('Listagem inválida pelo usuário comum', function () {
@@ -46,13 +58,13 @@ describe('Consulta de Usuário Não Admin', () => {
                 },
                 failOnStatusCode: false
             }).then(function (response) {
-                expect(response.status).to.eq(403)
+                expect(response.status).to.eq(403);
                 cy.fixture('./fixture-consulta/listagemInvalida.json').then(function (listagemInvalida) {
-                    expect(response.body).to.deep.eq(listagemInvalida)
-                })
-                expect(response.body).to.be.an('object')
-            })
-        })
+                    expect(response.body).to.deep.eq(listagemInvalida);
+                });
+                expect(response.body).to.be.an('object');
+            });
+        });
 
         it('Não deve permitir conseguir listar outros usuários pelo id', function () {
             cy.request({
@@ -65,12 +77,12 @@ describe('Consulta de Usuário Não Admin', () => {
             }).then(function (response) {
                 expect(response.status).to.eq(403)
                 cy.fixture('./fixture-consulta/listagemInvalida.json').then(function (listagemInvalida) {
-                    expect(response.body).to.deep.eq(listagemInvalida)
-                })
-                expect(response.body).to.be.an('object')
-            })
-        })
-    })
+                    expect(response.body).to.deep.eq(listagemInvalida);
+                });
+                expect(response.body).to.be.an('object');
+            });
+        });
+    });
 
     // cenário de listagem válida por um usuário comum
     describe('Listagem válida pelo usuário comum', function () {
@@ -82,14 +94,13 @@ describe('Consulta de Usuário Não Admin', () => {
                     Authorization: 'Bearer ' + token
                 }
             }).then(function (response) {
-                expect(response.status).to.eq(200)
-                expect(response.body.name).to.eq('João Pedro')
-                expect(response.body).to.be.an('object')
-                expect(response.body).to.have.property('id')
-                expect(response.body).to.have.property('name')
-                expect(response.body).to.have.property('email')
-            })
-        })
-    })
-
+                expect(response.status).to.eq(200);
+                expect(response.body.name).to.eq('João Pedro');
+                expect(response.body).to.be.an('object');
+                expect(response.body).to.have.property('id');
+                expect(response.body).to.have.property('name');
+                expect(response.body).to.have.property('email');
+            });
+        });
+    });
 })

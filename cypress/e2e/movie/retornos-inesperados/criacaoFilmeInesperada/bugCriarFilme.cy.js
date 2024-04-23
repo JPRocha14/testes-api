@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-describe('Consulta de Usuário', () => {
+describe('Retorno inesperado ao criar filmes erroneamente', function () {
     var id;
     var token;
     var randomEmail = faker.internet.email();
@@ -45,38 +45,47 @@ describe('Consulta de Usuário', () => {
 
     // hook para excluir usuário criado
     after(function () {
-        cy.log('Deletando usuário')
-        cy.deleteUsuario(id, token)
+        cy.log('Deletando usuário');
+        cy.deleteUsuario(id, token);
     })
 
-    //cenários de listagem válidas de usuários sendo admin
-    it('Deve permitir listar todos os usuários', () => {
+    it('Não deve permitir criar um novo filme com durationInMinutes negativa', function () {
         cy.request({
-            method: 'GET',
-            url: '/api/users',
+            method: 'POST',
+            url: '/api/movies',
             headers: {
                 Authorization: 'Bearer ' + token
-            }
+            },
+            body: {
+                title: "Rei Leão",
+                genre: "Aventura e ação",
+                description: "Um traíra trai o irmão e faz o sobrinho ter rancor",
+                durationInMinutes: -88,
+                releaseYear: 1994
+            },
+            failOnStatusCode: false
         }).then(function (response) {
-            expect(response.status).to.eq(200)
-            expect(response.body).to.be.an('array')
+            expect(response.status).to.eq(400);
         })
     })
 
-    it('Deve permitir listar o usuário pelo id', () => {
+    it('Não deve permitir criar um novo filme com releaseYear negativa', function () {
         cy.request({
-            method: 'GET',
-            url: '/api/users/' + id,
+            method: 'POST',
+            url: '/api/movies',
             headers: {
                 Authorization: 'Bearer ' + token
-            }
+            },
+            body: {
+                title: "Rei Leão",
+                genre: "Aventura e ação",
+                description: "Um traíra trai o irmão e faz o sobrinho ter rancor",
+                durationInMinutes: 88,
+                releaseYear: -1994
+            },
+            failOnStatusCode: false
         }).then(function (response) {
-            expect(response.status).to.eq(200)
-            expect(response.body).to.be.an('object')
-            expect(response.body.name).to.eq('João Pedro')
-            expect(response.body).to.have.property('id')
-            expect(response.body).to.have.property('name')
-            expect(response.body).to.have.property('email')
+            expect(response.status).to.eq(400);
         })
     })
 })

@@ -26,6 +26,8 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 // command para cadastrar usuário
+import { faker } from '@faker-js/faker';
+
 Cypress.Commands.add('cadastroUsuario', function () {
     cy.log('Cadastro de usuário')
     return cy.request({
@@ -53,4 +55,68 @@ Cypress.Commands.add('deleteUsuario', function (id, token) {
             Authorization: 'Bearer ' + token
         }
     })
+})
+
+Cypress.Commands.add('cadastroRandom', function (email) {
+    return cy.request({
+        method: 'POST',
+        url: '/api/users',
+        body: {
+            name: 'João Pedro',
+            email: email,
+            password: '123456'
+        }
+    }).then(function (response) {
+        const id = response.body.id;
+        return id;
+    })
+})
+
+Cypress.Commands.add('loginUser', function (email) {
+    cy.log(email);
+    return cy.request({
+        method: 'POST',
+        url: '/api/auth/login',
+        body: {
+            email: email,
+            password: '123456'
+        }
+    })
+})
+
+Cypress.Commands.add('tornarAdm', function (token) {
+    return cy.request({
+        method: 'PATCH',
+        url: '/api/users/admin',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+})
+
+Cypress.Commands.add('criarFilme', function (token) {
+
+    return cy.fixture('./fixture-criarFilme/criarFilme.json').then(function (filmeCriado) {
+        cy.request({
+            method: 'POST',
+            url: '/api/movies',
+            headers: {
+                Authorization: 'Bearer ' + token
+            },
+            body: filmeCriado,
+        }).then(function (response) {
+            var movieId = response.body.id;
+            return movieId;
+        })
+    })
+})
+
+Cypress.Commands.add('inativarUser', function (token) {
+    return cy.request({
+        method: 'PATCH',
+        url: '/api/users/inactivate',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    });
 })

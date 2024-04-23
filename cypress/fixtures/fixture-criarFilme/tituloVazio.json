@@ -1,0 +1,8 @@
+{
+    "message": [
+        "title must be longer than or equal to 1 characters",
+        "title should not be empty"
+    ],
+    "error": "Bad Request",
+    "statusCode": 400
+}

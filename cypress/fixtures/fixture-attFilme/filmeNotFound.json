@@ -1,0 +1,5 @@
+{
+    "message": "Movie not found",
+    "error": "Not Found",
+    "statusCode": 404
+}

@@ -1,0 +1,8 @@
+{
+    "message": [
+        "genre must be longer than or equal to 1 characters",
+        "genre should not be empty"
+    ],
+    "error": "Bad Request",
+    "statusCode": 400
+}
