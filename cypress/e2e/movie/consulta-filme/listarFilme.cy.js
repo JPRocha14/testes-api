@@ -11,15 +11,17 @@ describe('Consulta de filme', function () {
         }).then(function (response) {
             expect(response.status).to.eq(200)
             expect(response.body).to.be.an('array')
-            response.body.forEach(function (filmes) {
-                expect(filmes).to.have.property('description');
-                expect(filmes).to.have.property('durationInMinutes');
-                expect(filmes).to.have.property('genre');
-                expect(filmes).to.have.property('id');
-                expect(filmes).to.have.property('releaseYear');
-                expect(filmes).to.have.property('title');
-                expect(filmes).to.have.property('totalRating');
-            });
+            // todos os filmes não foram verificados por motivo
+            // de sobrecarga no código, tornando-o muito lento
+            // pelo fato de haver muitos filmes, por isso apenas o
+            // primeiro filme do array foi verificado
+            expect(response.body[0]).to.have.property('description');
+            expect(response.body[0]).to.have.property('durationInMinutes');
+            expect(response.body[0]).to.have.property('genre');
+            expect(response.body[0]).to.have.property('id');
+            expect(response.body[0]).to.have.property('releaseYear');
+            expect(response.body[0]).to.have.property('title');
+            expect(response.body[0]).to.have.property('totalRating');
             firstMovieId = response.body[0].id;
             firstMovieName = response.body[0].title;
             cy.log(firstMovieId);

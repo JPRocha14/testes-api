@@ -42,7 +42,7 @@ describe('Consulta de Usuário Não Admin', () => {
             });
         });
 
-        it('Não deve permitir conseguir listar outros usuários pelo id', function () {
+        it('Não deve permitir listar outros usuários pelo id', function () {
             cy.request({
                 method: 'GET',
                 url: '/api/users/' + randomNumber,
@@ -62,7 +62,7 @@ describe('Consulta de Usuário Não Admin', () => {
 
     // cenário de listagem válida por um usuário comum
     describe('Listagem válida pelo usuário comum', function () {
-        it('Deve permitir conseguir listar seu próprio usuário pelo id', function () {
+        it('Deve permitir listar seu próprio usuário pelo id', function () {
             cy.request({
                 method: 'GET',
                 url: '/api/users/' + id,
