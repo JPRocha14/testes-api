@@ -19,6 +19,7 @@ describe('Criação de review por usuário admin', function () {
                 token = response.body.accessToken;
                 cy.log('Tornando usuário admin')
                 cy.tornarAdm(token).then(function () {
+                    cy.log('Criando filme para realizar reviews')
                     cy.criarFilme(token).then(function (movieIdRecebido) {
                         movieId = movieIdRecebido;
                     });
@@ -29,6 +30,8 @@ describe('Criação de review por usuário admin', function () {
 
     // hook para excluir usuário criado
     after(function () {
+        cy.log('Deletando filme');
+        cy.deletarFilme(movieId, token);
         cy.log('Deletando usuário');
         cy.deleteUsuario(id, token);
     });
@@ -64,6 +67,25 @@ describe('Criação de review por usuário admin', function () {
                     movieId: movieId,
                     score: 5,
                     reviewText: "muito ruim!"
+                }
+            }).then(function (response) {
+                expect(response.status).to.eq(201);
+                expect(response.body).to.be.undefined;
+            });
+        });
+
+
+        it('Deve permitir criar review com reviewText vazio', function () {
+            cy.request({
+                method: 'POST',
+                url: '/api/users/review',
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                body: {
+                    movieId: movieId,
+                    score: 5,
+                    reviewText: ""
                 }
             }).then(function (response) {
                 expect(response.status).to.eq(201);

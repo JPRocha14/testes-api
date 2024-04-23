@@ -1,0 +1,8 @@
+{
+    "message": [
+        "name must be longer than or equal to 1 characters",
+        "name should not be empty"
+    ],
+    "error": "Bad Request",
+    "statusCode": 400
+}

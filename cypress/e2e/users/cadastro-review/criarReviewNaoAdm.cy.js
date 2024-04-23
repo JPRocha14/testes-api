@@ -16,13 +16,10 @@ describe('Criação de review por usuário não admin', function () {
             cy.loginUser(randomEmail).then(function (response) {
                 token = response.body.accessToken;
             });
-        });
-        cy.log('Listando todos os filmes para pegar o ID do primeiro');
-        cy.request({
-            method: 'GET',
-            url: '/api/movies',
-        }).then(function (response) {
-            firstMovieId = response.body[0].id;
+            cy.log('Listando todos os filmes para pegar o ID do primeiro');
+            cy.listarFilmes().then(function (valor) {
+                firstMovieId = valor;
+            })
         });
     });
 
@@ -62,6 +59,24 @@ describe('Criação de review por usuário não admin', function () {
                     movieId: firstMovieId,
                     score: 5,
                     reviewText: "muito ruim!"
+                }
+            }).then(function (response) {
+                expect(response.status).to.eq(201);
+                expect(response.body).to.be.undefined;
+            });
+        });
+
+        it('Deve permitir criar review com reviewText vazio', function () {
+            cy.request({
+                method: 'POST',
+                url: '/api/users/review',
+                headers: {
+                    Authorization: 'Bearer ' + token
+                },
+                body: {
+                    movieId: firstMovieId,
+                    score: 5,
+                    reviewText: ""
                 }
             }).then(function (response) {
                 expect(response.status).to.eq(201);

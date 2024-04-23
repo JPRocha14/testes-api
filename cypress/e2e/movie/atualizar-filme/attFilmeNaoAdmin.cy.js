@@ -18,12 +18,7 @@ describe('Atualização de filme', function () {
                 token = response.body.accessToken;
             });
             cy.log('Listando todos os filmes para pegar o ID do primeiro');
-            cy.request({
-                method: 'GET',
-                url: '/api/movies',
-            }).then(function (response) {
-                firstMovieId = response.body[0].id;
-            });
+            cy.listarFilmes();
         });
     });
 

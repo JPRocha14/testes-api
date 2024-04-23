@@ -24,6 +24,8 @@ describe('Criação de Filme', function () {
 
     // hook para excluir usuário criado
     after(function () {
+        cy.log('Deletando filme');
+        cy.deletarFilme(movieId, token);
         cy.log('Deletando usuário');
         cy.deleteUsuario(id, token);
     })

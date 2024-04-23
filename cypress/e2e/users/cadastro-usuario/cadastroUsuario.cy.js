@@ -8,7 +8,6 @@ describe('Cadastro de Usuário', () => {
 
   // cenários de cadastros válidos
   describe('Cadastros válidos', function () {
-
     // hook para logar usuário  e
     // inativá-lo depois de cada teste
     afterEach(function () {
@@ -96,11 +95,10 @@ describe('Cadastro de Usuário', () => {
 
   // cenários de cadastros inválidos
   describe('Cadastros inválidos', function () {
-
     // hook para criar um usuário a fim de utilizá-lo no primeiro
     // cenário de teste
     before(function () {
-      cy.log('Cadastrando usuário');
+      cy.log('Cadastrando usuário para realizar o teste de email duplo');
       cy.request({
         method: 'POST',
         url: '/api/users',
@@ -252,6 +250,24 @@ describe('Cadastro de Usuário', () => {
         });
       });
     });
-  });
 
+    it('Não deve permitir cadastrar usuário com campo nome em branco', function () {
+      cy.request({
+        method: 'POST',
+        url: '/api/users',
+        body: {
+          name: '',
+          email: email,
+          password: '123456'
+        },
+        failOnStatusCode: false
+      }).then(function (response) {
+        expect(response.status).to.eq(400)
+        cy.fixture('./fixture-cadastro/nomeVazio.json').then(function (nomeVazio) {
+          expect(response.body).to.deep.eq(nomeVazio);
+          expect(nomeVazio).to.be.an('object');
+        });
+      });
+    })
+  });
 })

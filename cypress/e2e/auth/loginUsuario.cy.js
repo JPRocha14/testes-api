@@ -11,7 +11,7 @@ describe('Login de Usuário', () => {
     cy.log('Cadastrando usuário');
     cy.cadastroRandom(randomEmail).then(function (idUser) {
       id = idUser;
-      cy.log('Logando usuário');
+      cy.log('Logando usuário corretamente');
       cy.loginUser(randomEmail).then(function (response) {
         token = response.body.accessToken;
         cy.log('Tornando usuário admin')
@@ -27,14 +27,14 @@ describe('Login de Usuário', () => {
   });
 
   // cenários de logins inválidos
-  describe('Cenários de tentativa de login inválido', function () {
+  describe('Cenários de tentativas de login inválido', function () {
     it('Não deve permitir logar com email vazio', function () {
       cy.request({
         method: 'POST',
         url: '/api/auth/login',
         body: {
           email: '',
-          password: 'senhacorreta'
+          password: '123456'
         },
         failOnStatusCode: false
       }).then(function (response) {
@@ -52,7 +52,7 @@ describe('Login de Usuário', () => {
         url: '/api/auth/login',
         body: {
           email: 'pedrogmail.com',
-          password: 'senhacorreta'
+          password: '123456'
         },
         failOnStatusCode: false
       }).then(function (response) {
@@ -69,8 +69,8 @@ describe('Login de Usuário', () => {
         method: 'POST',
         url: '/api/auth/login',
         body: {
-          email: 'pedro12345@gmail.com',
-          password: 'senhacorreta'
+          email: 'jubileujubileujubileu213@gmail.com',
+          password: '123456'
         },
         failOnStatusCode: false
       }).then(function (response) {
@@ -87,7 +87,7 @@ describe('Login de Usuário', () => {
         method: 'POST',
         url: '/api/auth/login',
         body: {
-          email: 'pedro12@gmail.com',
+          email: randomEmail,
           password: ''
         },
         failOnStatusCode: false
@@ -105,7 +105,7 @@ describe('Login de Usuário', () => {
         method: 'POST',
         url: '/api/auth/login',
         body: {
-          email: 'pedro12@gmail.com',
+          email: randomEmail,
           password: 'senhaincorreta'
         },
         failOnStatusCode: false

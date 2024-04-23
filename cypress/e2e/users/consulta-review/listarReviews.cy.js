@@ -16,14 +16,14 @@ describe('Listagem de Reviews', function () {
             cy.log('Logando usuário');
             cy.loginUser(randomEmail).then(function (response) {
                 token = response.body.accessToken;
-                cy.log('Listando todos os filmes para pegar o ID do primeiro');
+                cy.log('Listando todos os filmes');
                 cy.request({
                     method: 'GET',
                     url: '/api/movies',
                 }).then(function (response) {
                     firstMovieId = response.body[0].id;
                     secondMovieId = response.body[1].id;
-                    cy.log('Criando review nº 1')
+                    cy.log('Criando review sobre filme X')
                     cy.request({
                         method: 'POST',
                         url: '/api/users/review',
@@ -36,7 +36,7 @@ describe('Listagem de Reviews', function () {
                             reviewText: "muito bom!"
                         }
                     })
-                    cy.log('Criando review nº 2')
+                    cy.log('Criando review sobre filme Y')
                     cy.request({
                         method: 'POST',
                         url: '/api/users/review',

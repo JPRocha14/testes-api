@@ -120,12 +120,22 @@ Cypress.Commands.add('inativarUser', function (token) {
     });
 })
 
-// Cypress.Commands.add('listarFilmes', function () {
-//     return cy.request({
-//         method: 'GET',
-//         url: '/api/movies',
-//     }).then(function (response) {
-//         var firstMovieId = response.body[0].id;
-//         return firstMovieId;
-//     });
-// })
+Cypress.Commands.add('listarFilmes', function () {
+    return cy.request({
+        method: 'GET',
+        url: '/api/movies',
+    }).then(function (response) {
+        var firstMovieId = response.body[0].id;
+        return firstMovieId;
+    });
+})
+
+Cypress.Commands.add('deletarFilme', function (movieId, token) {
+    return cy.request({
+        method: 'DELETE',
+        url: '/api/movies/' + movieId,
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    })
+})

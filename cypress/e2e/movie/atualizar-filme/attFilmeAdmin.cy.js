@@ -28,6 +28,8 @@ describe('Atualização de Filme', function () {
 
     // hook para excluir usuário criado
     after(function () {
+        cy.log('Deletando filme');
+        cy.deletarFilme(movieId, token);
         cy.log('Deletando usuário');
         cy.deleteUsuario(id, token);
     })
@@ -53,7 +55,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com title vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + movieIds,
+                url: '/api/movies/' + movieId,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -77,7 +79,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com genre vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + movieIds,
+                url: '/api/movies/' + movieId,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -101,7 +103,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com description vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + movieIds,
+                url: '/api/movies/' + movieId,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -125,7 +127,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com as strings vazias', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + movieIds,
+                url: '/api/movies/' + movieId,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
