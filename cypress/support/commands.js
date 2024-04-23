@@ -73,7 +73,6 @@ Cypress.Commands.add('cadastroRandom', function (email) {
 })
 
 Cypress.Commands.add('loginUser', function (email) {
-    cy.log(email);
     return cy.request({
         method: 'POST',
         url: '/api/auth/login',
@@ -107,9 +106,9 @@ Cypress.Commands.add('criarFilme', function (token) {
         }).then(function (response) {
             var movieId = response.body.id;
             return movieId;
-        })
-    })
-})
+        });
+    });
+});
 
 Cypress.Commands.add('inativarUser', function (token) {
     return cy.request({
@@ -120,3 +119,13 @@ Cypress.Commands.add('inativarUser', function (token) {
         }
     });
 })
+
+// Cypress.Commands.add('listarFilmes', function () {
+//     return cy.request({
+//         method: 'GET',
+//         url: '/api/movies',
+//     }).then(function (response) {
+//         var firstMovieId = response.body[0].id;
+//         return firstMovieId;
+//     });
+// })

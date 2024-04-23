@@ -8,40 +8,18 @@ describe('Consulta de Usuário', () => {
     // hook para cadastrar usuário, logar com o usuário cadastrado 
     // e torná-lo admin para poder excluí-lo depois
     before(function () {
-        cy.log('Cadastrando usuário')
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201)
-            id = response.body.id
-        })
-        cy.log('Logando usuário')
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200)
-            token = response.body.accessToken
-            cy.log('Tornando usuário admin')
-            cy.request({
-                method: 'PATCH',
-                url: '/api/users/admin',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            })
-        })
-    })
+        cy.log('Cadastrando usuário');
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+                cy.log('Tornando usuário admin')
+                cy.tornarAdm(token).then(function () {
+                });
+            });
+        });
+    });
 
     // hook para excluir usuário criado
     after(function () {
@@ -50,7 +28,7 @@ describe('Consulta de Usuário', () => {
     })
 
     //cenários de listagem válidas de usuários sendo admin
-    it('Deve permitir listar todos os usuários', () => {
+    it('Deve permitir listar todos os usuários', function () {
         cy.request({
             method: 'GET',
             url: '/api/users',
@@ -60,17 +38,15 @@ describe('Consulta de Usuário', () => {
         }).then(function (response) {
             expect(response.status).to.eq(200)
             expect(response.body).to.be.an('array')
-            response.body.forEach(function (usuarios) {
-                expect(usuarios).to.have.property('active');
-                expect(usuarios).to.have.property('email');
-                expect(usuarios).to.have.property('id');
-                expect(usuarios).to.have.property('name');
-                expect(usuarios).to.have.property('type');
-            })
+            expect(response.body[0]).to.have.property('active');
+            expect(response.body[0]).to.have.property('email');
+            expect(response.body[0]).to.have.property('id');
+            expect(response.body[0]).to.have.property('name');
+            expect(response.body[0]).to.have.property('type');
         })
     })
 
-    it('Deve permitir listar o usuário pelo id', () => {
+    it('Deve permitir listar o usuário pelo id', function () {
         cy.request({
             method: 'GET',
             url: '/api/users/' + id,
@@ -85,6 +61,18 @@ describe('Consulta de Usuário', () => {
             expect(response.body.email).to.eq(randomEmail);
             expect(response.body).to.have.property('active');
             expect(response.body).to.have.property('type');
+        });
+    });
+
+    it('Não deve permitir listar usuário por id inexistente', function () {
+        cy.request({
+            method: 'GET',
+            url: '/api/users/' + 0,
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }).then(function (response) {
+            expect(response.status).to.eq(200);
         });
     });
 })

@@ -9,42 +9,18 @@ describe('Consulta de Usuário Não Admin', () => {
     // hook para cadastrar usuário e logar com o usuário cadastrado
     before(function () {
         cy.log('Cadastrando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201);
-            id = response.body.id;
-        });
-        cy.log('Logando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200);
-            token = response.body.accessToken;
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+            });
         });
     });
 
     after(function () {
-        cy.request({
-            method: 'PATCH',
-            url: '/api/users/inactivate',
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(204);
-        });
+        cy.log('Inativando usuário')
+        cy.inativarUser(token);
     });
 
     // cenários de listagens não válidas por um usuário comum

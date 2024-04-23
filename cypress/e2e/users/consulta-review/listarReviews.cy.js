@@ -3,80 +3,61 @@ import { faker } from '@faker-js/faker';
 describe('Listagem de Reviews', function () {
     var id;
     var token;
+    var firstMovieId;
+    var secondMovieId;
     var randomEmail = faker.internet.email();
 
     // hook para cadastrar usuário,
     // logar usuário e criar uma review
     before(function () {
-        cy.log('Cadastrando usuário')
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201)
-            id = response.body.id
-        })
-        cy.log('Logando usuário')
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200)
-            token = response.body.accessToken
-            cy.log('Criando review nº 1')
-            cy.request({
-                method: 'POST',
-                url: '/api/users/review',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                },
-                body: {
-                    movieId: 1,
-                    score: 1,
-                    reviewText: "muito bom!"
-                }
-            }).then(function (response) {
-                expect(response.status).to.eq(201);
-            })
-            cy.log('Criando review nº 2')
-            cy.request({
-                method: 'POST',
-                url: '/api/users/review',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                },
-                body: {
-                    movieId: 2,
-                    score: 3,
-                    reviewText: "muito ruim!"
-                }
-            }).then(function (response) {
-                expect(response.status).to.eq(201);
-            })
-        })
-    })
+        cy.log('Cadastrando usuário');
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+                cy.log('Listando todos os filmes para pegar o ID do primeiro');
+                cy.request({
+                    method: 'GET',
+                    url: '/api/movies',
+                }).then(function (response) {
+                    firstMovieId = response.body[0].id;
+                    secondMovieId = response.body[1].id;
+                    cy.log('Criando review nº 1')
+                    cy.request({
+                        method: 'POST',
+                        url: '/api/users/review',
+                        headers: {
+                            Authorization: 'Bearer ' + token
+                        },
+                        body: {
+                            movieId: firstMovieId,
+                            score: 1,
+                            reviewText: "muito bom!"
+                        }
+                    })
+                    cy.log('Criando review nº 2')
+                    cy.request({
+                        method: 'POST',
+                        url: '/api/users/review',
+                        headers: {
+                            Authorization: 'Bearer ' + token
+                        },
+                        body: {
+                            movieId: secondMovieId,
+                            score: 3,
+                            reviewText: "muito ruim!"
+                        }
+                    });
+                });
+            });
+        });
+    });
 
     // hook para inativar usuário depois de todos os testes
     after(function () {
         cy.log('Inativando usuário')
-        cy.request({
-            method: 'PATCH',
-            url: '/api/users/inactivate',
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(204)
-        })
+        cy.inativarUser(token);
     })
 
     it('Deve permitir listar reviews feita pelo usuário', function () {
@@ -87,7 +68,6 @@ describe('Listagem de Reviews', function () {
                 Authorization: 'Bearer ' + token
             }
         }).then(function (response) {
-
             expect(response.status).to.eq(200);
             response.body.forEach(function (review) {
                 expect(review).to.have.property('id');

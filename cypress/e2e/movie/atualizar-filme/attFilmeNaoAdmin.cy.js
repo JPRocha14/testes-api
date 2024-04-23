@@ -11,35 +11,17 @@ describe('Atualização de filme', function () {
     // e listar todos os filmes
     before(function () {
         cy.log('Cadastrando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201);
-            id = response.body.id;
-        })
-        cy.log('Logando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200);
-            token = response.body.accessToken;
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+            });
             cy.log('Listando todos os filmes para pegar o ID do primeiro');
             cy.request({
                 method: 'GET',
                 url: '/api/movies',
             }).then(function (response) {
-                expect(response.status).to.eq(200);
                 firstMovieId = response.body[0].id;
             });
         });

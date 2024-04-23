@@ -3,51 +3,25 @@ import { faker } from '@faker-js/faker';
 describe('Atualização de Filme', function () {
     var id;
     var token;
-    var firstMovieId;
+    var movieId;
     var randomEmail = faker.internet.email();
 
     // hook para cadastrar usuário, logar com o usuário cadastrado 
     // e torná-lo admin para poder excluí-lo depois
     before(function () {
         cy.log('Cadastrando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201)
-            id = response.body.id
-        });
-        cy.log('Logando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200);
-            token = response.body.accessToken;
-            cy.log('Tornando usuário admin');
-            cy.request({
-                method: 'PATCH',
-                url: '/api/users/admin',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            });
-            cy.log('Listando todos os filmes para pegar o ID do primeiro');
-            cy.request({
-                method: 'GET',
-                url: '/api/movies',
-            }).then(function (response) {
-                expect(response.status).to.eq(200);
-                firstMovieId = response.body[0].id;
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+                cy.log('Tornando usuário admin')
+                cy.tornarAdm(token).then(function () {
+                    cy.log('Criando filme');
+                    cy.criarFilme(token).then(function (movieIdRecebido) {
+                        movieId = movieIdRecebido;
+                    });
+                });
             });
         });
     });
@@ -63,7 +37,7 @@ describe('Atualização de Filme', function () {
             cy.fixture('./fixture-attFilme/filmeAtt.json').then(function (newMovie) {
                 cy.request({
                     method: 'PUT',
-                    url: '/api/movies/' + firstMovieId,
+                    url: '/api/movies/' + movieId,
                     headers: {
                         Authorization: 'Bearer ' + token
                     },
@@ -79,7 +53,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com title vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + firstMovieId,
+                url: '/api/movies/' + movieIds,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -103,7 +77,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com genre vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + firstMovieId,
+                url: '/api/movies/' + movieIds,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -127,7 +101,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com description vazio', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + firstMovieId,
+                url: '/api/movies/' + movieIds,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },
@@ -151,7 +125,7 @@ describe('Atualização de Filme', function () {
         it('Não deve permitir atualizar um filme com as strings vazias', function () {
             cy.request({
                 method: 'PUT',
-                url: '/api/movies/' + firstMovieId,
+                url: '/api/movies/' + movieIds,
                 headers: {
                     Authorization: 'Bearer ' + token
                 },

@@ -1,38 +1,21 @@
+import { faker } from '@faker-js/faker';
+
 describe('Login de Usuário', () => {
-  var name;
-  var email;
-  var password;
   var token;
   var id;
+  var randomEmail = faker.internet.email();
 
   // hook para cadastrar usuário, logar com o usuário cadastrado 
   // e torná-lo admin para poder excluí-lo depois
   before(function () {
-    cy.cadastroUsuario().then(function (response) {
-      id = response.id;
-      email = response.email;
-      name = response.name;
-      password = response.password;
-    }).then(function () {
-      cy.log('Login de usuário');
-      cy.request({
-        method: 'POST',
-        url: '/api/auth/login',
-        body: {
-          email: email,
-          password: password
-        }
-      }).then(function (response) {
+    cy.log('Cadastrando usuário');
+    cy.cadastroRandom(randomEmail).then(function (idUser) {
+      id = idUser;
+      cy.log('Logando usuário');
+      cy.loginUser(randomEmail).then(function (response) {
         token = response.body.accessToken;
-        cy.log(token);
-        cy.log('Permissão de admin');
-        cy.request({
-          method: 'PATCH',
-          url: 'https://raromdb-3c39614e42d4.herokuapp.com/api/users/admin',
-          headers: {
-            Authorization: "Bearer " + token
-          }
-        });
+        cy.log('Tornando usuário admin')
+        cy.tornarAdm(token);
       });
     });
   });

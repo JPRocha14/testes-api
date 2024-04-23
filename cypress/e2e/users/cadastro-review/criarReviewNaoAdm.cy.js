@@ -3,50 +3,33 @@ import { faker } from '@faker-js/faker';
 describe('Criação de review por usuário não admin', function () {
     var id;
     var token;
+    var firstMovieId;
     var randomEmail = faker.internet.email();
 
 
     // hook para cadastrar usuário e logar com o usuário cadastrado 
     before(function () {
         cy.log('Cadastrando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201);
-            id = response.body.id;
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+            });
         });
-        cy.log('Logando usuário');
+        cy.log('Listando todos os filmes para pegar o ID do primeiro');
         cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
+            method: 'GET',
+            url: '/api/movies',
         }).then(function (response) {
-            expect(response.status).to.eq(200);
-            token = response.body.accessToken;
+            firstMovieId = response.body[0].id;
         });
     });
 
     // hook para inativar usuário depois de todos os testes
     after(function () {
         cy.log('Inativando usuário');
-        cy.request({
-            method: 'PATCH',
-            url: '/api/users/inactivate',
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(204);
-        });
+        cy.inativarUser(token);
     });
 
     describe('Review Correta', function () {
@@ -58,7 +41,7 @@ describe('Criação de review por usuário não admin', function () {
                     Authorization: 'Bearer ' + token
                 },
                 body: {
-                    movieId: 1,
+                    movieId: firstMovieId,
                     score: 1,
                     reviewText: "muito ruim!"
                 }
@@ -76,7 +59,7 @@ describe('Criação de review por usuário não admin', function () {
                     Authorization: 'Bearer ' + token
                 },
                 body: {
-                    movieId: 1,
+                    movieId: firstMovieId,
                     score: 5,
                     reviewText: "muito ruim!"
                 }
@@ -118,7 +101,7 @@ describe('Criação de review por usuário não admin', function () {
                     Authorization: 'Bearer ' + token
                 },
                 body: {
-                    movieId: 1,
+                    movieId: firstMovieId,
                     score: 0,
                     reviewText: "muito bom!"
                 },
@@ -140,7 +123,7 @@ describe('Criação de review por usuário não admin', function () {
                     Authorization: 'Bearer ' + token
                 },
                 body: {
-                    movieId: 1,
+                    movieId: firstMovieId,
                     score: 6,
                     reviewText: "muito bom!"
                 },

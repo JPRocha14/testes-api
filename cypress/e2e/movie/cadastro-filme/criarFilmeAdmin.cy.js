@@ -10,36 +10,14 @@ describe('Criação de Filme', function () {
     // e torná-lo admin para poder excluí-lo depois
     before(function () {
         cy.log('Cadastrando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/users',
-            body: {
-                name: 'João Pedro',
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(201);
-            id = response.body.id;
-        })
-        cy.log('Logando usuário');
-        cy.request({
-            method: 'POST',
-            url: '/api/auth/login',
-            body: {
-                email: randomEmail,
-                password: 'senhacorreta'
-            }
-        }).then(function (response) {
-            expect(response.status).to.eq(200);
-            token = response.body.accessToken;
-            cy.log('Tornando usuário admin');
-            cy.request({
-                method: 'PATCH',
-                url: '/api/users/admin',
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
+        cy.cadastroRandom(randomEmail).then(function (idUser) {
+            id = idUser;
+            cy.log('Logando usuário');
+            cy.loginUser(randomEmail).then(function (response) {
+                token = response.body.accessToken;
+                cy.log('Tornando usuário admin')
+                cy.tornarAdm(token).then(function () {
+                });
             });
         });
     });
